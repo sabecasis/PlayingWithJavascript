@@ -1,0 +1,15 @@
+﻿div[name~=vacio] {
+    width: 100px;
+    height: 100px;/*las medidas conviene que coincidan con las de la imagen abajo*/
+    border: solid;
+    border-color: green;
+    background-image: url("./vacio.jpg");
+    display: inline-block;
+}
+
+img{
+    width: 100px;
+    height: 100px; /*o sea estas*/
+    margin:0px;
+    padding:0px;
+}

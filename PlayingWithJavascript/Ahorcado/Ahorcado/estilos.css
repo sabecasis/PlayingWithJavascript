@@ -1,0 +1,27 @@
+﻿body {
+}
+
+#dibujo{
+    width:300px;
+    height:300px;
+    display:inline-block;
+    margin:0px;
+}
+
+#letras{
+    width:600px;
+    height:300px;
+    display:inline-block;
+    margin:0px;
+}
+
+img{
+    width:30px;
+    height:30px;
+}
+
+#contenedor{
+    padding:0px;
+    margin:0px;
+    font-size:0px;
+}

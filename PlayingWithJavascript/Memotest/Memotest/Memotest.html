@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Memotest</title>
+    <link href="estilos.css" type="text/css" rel="stylesheet" />
+    <script>
+        function Motor() {
+            this.bolsaDeImagenes = new Array();
+            this.tablero = new Tablero();
+            this.jugador = new Jugador();
+
+            for (i = 0; i < 8; i++) {
+                var imagen = document.createElement('IMG');
+                imagen.id = 'imagen' + i;
+                imagen.src = 'imagen' + i + '.jpg';
+                
+                this.bolsaDeImagenes[i] = imagen;
+            }
+
+            this.nuevaPartida = function () {
+                this.tablero = new Tablero();
+                var posicion = 0;
+                var posicionesEncontradas = 0;
+                for (i = 0; i < this.bolsaDeImagenes.length; i++) {
+                    var count = 0;
+                    while (count!=2) {
+                        this.tablero.casilleros[posicion].imagen = this.bolsaDeImagenes[i].cloneNode(true);
+                        while(this.tablero.casilleros[posicion].imagen != null && posicionesEncontradas!=15){
+                            posicion = Math.floor(Math.random() * 16);
+                        }
+                        posicionesEncontradas++;
+                        count++;
+                    }
+                }
+                this.jugador.seleccionada = null;
+                this.jugador.encontradas = 0;
+                this.jugador.erradas = 0;
+            }
+
+            this.borrar=function(posicion){
+                this.tablero.casilleros[posicion].div.removeChild(this.tablero.casilleros[posicion].imagen);
+            }
+
+            this.jugar = function (id) {
+                var posicion = id.substring('casillero'.length);
+                this.tablero.casilleros[posicion].div.appendChild(this.tablero.casilleros[posicion].imagen);
+
+                if (this.jugador.seleccionada == null) {
+                    this.jugador.seleccionada = this.tablero.casilleros[posicion];
+                    this.jugador.seleccionada.div.onclick = null;
+                } else {
+                    if (this.jugador.seleccionada.imagen.id == this.tablero.casilleros[posicion].imagen.id) {
+                        alert('Encontro una coincidencia!!');
+                        this.tablero.casilleros[posicion].div.onclick = null;
+                        this.jugador.seleccionada = null;
+                        this.jugador.encontradas++;
+                        if (this.jugador.encontradas == 8) {
+                            alert('GANO!!');
+                        }
+                    } else {
+                        this.jugador.seleccionada.div.removeChild(this.jugador.seleccionada.imagen);
+                        this.jugador.seleccionada.div.onclick = jugar;
+                        setTimeout(borrarImagen, 1000, posicion);
+                        this.jugador.seleccionada = null;
+                        this.jugador.erradas++;
+                    }
+                }
+            }
+        }
+
+        window.onload=function(){
+            oMotor = new Motor();
+            oMotor.nuevaPartida();
+        }
+
+        function nuevo() {
+            oMotor.nuevaPartida();
+        }
+
+        function Jugador() {
+            this.seleccionada = null;
+            this.encontradas = 0;
+            this.erradas = 0;
+        }
+
+        function Tablero() {
+            this.casilleros = new Array(16);
+            this.div = document.getElementById('contenedor');
+
+            
+            while (this.div.firstChild) {
+                this.div.removeChild(this.div.firstChild);
+            }
+            
+
+            for (i = 0; i < this.casilleros.length; i++) {
+                var casDiv = document.createElement('DIV');
+                casDiv.id = 'casillero' + i;
+                var divHorizontal;
+                if (i % 4 == 0) {
+                    divHorizontal = document.createElement('DIV');
+                    this.div.appendChild(divHorizontal);
+                }
+                divHorizontal.appendChild(casDiv);
+                this.casilleros[i] = new Casillero(casDiv);
+            }
+        }
+
+        function Casillero(div) {
+            this.imagen = null;
+            this.div = div;
+
+            this.div.onclick = jugar;
+        }
+
+        function borrarImagen(posicion) {
+            oMotor.borrar(posicion);
+        }
+
+        function jugar() {
+            oMotor.jugar(this.id);
+        }
+    </script>
+</head>
+<body>
+    <div id="contenedor"></div>
+    <input type="button" value="Nuevo Juego" onclick="nuevo();" />
+</body>
+</html>

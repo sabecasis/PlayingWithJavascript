@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="estilos.css" type="text/css" rel="stylesheet" />
+    <title>Ahorcado</title>
+    <script>
+        window.onload = function () {
+            dibujito = document.getElementById('dibujo');
+            var contexto = dibujo.getContext('2d');
+            contexto.moveTo(0, 299);
+            contexto.lineTo(300, 299);
+            contexto.stroke();
+            contexto.moveTo(75, 299);
+            contexto.lineTo(75, 10);
+            contexto.stroke();
+            contexto.moveTo(75, 10);
+            contexto.lineTo(150, 10);
+            contexto.stroke();
+            contexto.moveTo(150, 10);
+            contexto.lineTo(150, 20);
+            contexto.stroke();
+
+            oMotor = new Motor()
+            var nombre1 = prompt("Ingrese el nombre del jugador 1", "Jugador 1");
+            var nombre2 = prompt("Ingrese el nombre del jugador 2", "Jugador 2");
+            oMotor.jugador1.nombre = nombre1;
+            oMotor.jugador2.nombre = nombre2;
+            while (oMotor.palabra == "") {
+                oMotor.palabra= prompt(oMotor.jugadorActual.nombre + " ingrese las palabras para que adivine el otro jugador", "");
+            }
+           
+            acomodarPalabras();
+            alert('A JUGAR!!');
+            oMotor.cambiarJugador();
+            oMotor.jugar();
+            
+
+        }
+
+        function acomodarPalabras() {
+            tableroPalabras = document.getElementById('letras');
+            var ctx = tableroPalabras.getContext('2d');
+            var posx = 2;
+            image = document.getElementById('image');
+            for (i = 0; i < oMotor.palabra.length; i++) {
+                if (oMotor.palabra.charAt(i) == " ") {
+                    posx += 10;
+                } else {
+                    oMotor.contadorPalabra++;
+                    ctx.drawImage(image, posx, 50, 10, 10);
+                    posx += 10;
+                }
+            }
+        }
+
+        function Jugador(nombre) {
+            this.cantidadPerdidos = 0;
+            this.cantidadGanados = 0;
+            this.nombre = nombre;
+        }
+
+        function Motor() {
+            this.jugador1 = new Jugador("Jugador 1");
+            this.jugador2 = new Jugador("Jugador 2");
+            this.jugadorActual = this.jugador1;
+            this.comandosAhorcado = new Array(6);
+            this.contadorMalasLetras = 0;
+            this.contadorBuenasLetras = 0;
+            this.palabra = "";
+            this.letrasUsadas = new Array();
+            this.contadorPalabra = 0;
+
+            this.cambiarJugador=function(){
+                if(this.jugadorActual==this.jugador1){
+                    this.jugadorActual=this.jugador2;
+                }else{
+                    this.jugadorActual=this.jugador1;
+                }
+            }
+
+            this.comandosAhorcado[0] = new dibujarCabeza();
+            this.comandosAhorcado[1] = new dibujarCuerpo();
+            this.comandosAhorcado[2] = new dibujarBrazoDerecho();
+            this.comandosAhorcado[3] = new dibujarBrazoIzquierdo();
+            this.comandosAhorcado[4] = new dibujarPiernaDerecha();
+            this.comandosAhorcado[5] = new dibujarPiernaIzquierda();
+
+            this.jugar = function () {
+                var letra = "";
+                letra = prompt(oMotor.jugadorActual.nombre + " ingrese una letra", "");
+
+                for (i = 0; i < this.letrasUsadas.length; i++) {
+                    if (this.letrasUsadas[i] == letra) {
+                        alert('YA utilizó esa letra!');
+                        return;
+                    }
+                }
+                this.letrasUsadas[this.letrasUsadas.length - 1] = letra;
+                var encontrado = false;
+                for (i = 0; i < this.palabra.length; i++) {
+                    if (this.palabra.charAt(i) == letra) {
+                        dibujarLetra(letra, i);
+                        encontrado = true;
+                        this.contadorBuenasLetras++;
+                    }
+                }
+                if (!encontrado) {
+                    this.comandosAhorcado[this.contadorMalasLetras].dibujar();
+                    this.contadorMalasLetras++;
+                } 
+                
+                if (this.contadorMalasLetras != 6 && this.contadorBuenasLetras != this.contadorPalabra) {
+                    this.jugar();
+                }
+            }
+        }
+
+
+        function dibujarLetra(letra, i) {
+                var ctx = tableroPalabras.getContext('2d');
+                var posx = 10 * i;
+                ctx.clearRect(posx, 50, 10, 10);
+                ctx.fillText(letra, posx, 50, 10);
+            
+        }
+
+        function dibujarCabeza() {
+            this.dibujar = function () {
+                var contexto = dibujito.getContext('2d');
+                contexto.arc(150, 20, 20, 0, 2 * Math.PI);
+                contexto.stroke();
+            }
+        }
+
+        function dibujarCuerpo() {
+            this.dibujar = function () {
+                var contexto = dibujito.getContext('2d');
+                contexto.moveTo(150, 60);
+                contexto.lineTo(150, 100);
+                contexto.stroke();
+            }
+        }
+
+        function dibujarBrazoDerecho() {
+            this.dibujar = function () {
+                var contexto = dibujito.getContext('2d');
+                contexto.moveTo(150, 75);
+                contexto.lineTo(300, 100);
+                contexto.stroke();
+            }
+        }
+
+        function dibujarBrazoIzquierdo() {
+            this.dibujar = function () {
+                var contexto = dibujito.getContext('2d');
+                contexto.moveTo(150, 75);
+                contexto.lineTo(0, 100);
+                contexto.stroke();
+            }
+        }
+
+        function dibujarPiernaDerecha() {
+            this.dibujar = function () {
+                var contexto = dibujito.getContext('2d');
+                contexto.moveTo(150, 100);
+                contexto.lineTo(300, 200);
+                contexto.stroke();
+            }
+        }
+
+        function dibujarPiernaIzquierda() {
+            this.dibujar = function () {
+                var contexto = dibujito.getContext('2d');
+                contexto.moveTo(150, 100);
+                contexto.lineTo(0, 200);
+                contexto.stroke();
+            }
+        }
+
+
+    </script>
+</head>
+<body>
+    <div id="contenedor">
+        <canvas id="dibujo"></canvas>
+        <canvas id="letras"></canvas>
+    </div>
+    <div>Letras usadas: <span id="usadas"></span></div>
+    <img src="img.png" id="image" hidden="hidden"/>
+</body>
+</html>

@@ -1,0 +1,77 @@
+﻿body {
+}
+
+div[id^=tablero]{
+    display:inline-block;
+    padding:0px;
+    margin-left:2%;
+}
+
+div[id^=contenedor]{
+    margin-top:5%;
+}
+
+span[id^=spJugador]{
+    font-size:20px;
+}
+
+div[id^=horizontal]{
+    padding:0px;
+    margin:0px;
+}
+
+div[id^=vacio]{
+    width:20px;
+    height:20px;
+    padding:0px;
+    margin:0px;
+    background-color:#0094ff;
+    border:solid;
+    border-color:#4800ff;
+    display:inline-block;
+}
+
+div[id^=barco]{
+    width:20px;
+    height:20px;
+    padding:0px;
+    margin:0px;
+    background-color:#b6ff00;
+}
+
+div[id^=tocado]{
+    width:20px;
+    height:20px;
+    background-color:#ff0000;
+}
+div[id^=agua]{
+    width:20px;
+    height:20px;
+    background-color:#00ffff;
+}
+
+div[id^=coordenadaH]{
+    width:20px;
+    height:20px;
+    background-color:#ff006e;
+    display:inline-block;
+    border-color:black;
+    border:solid;
+}
+
+div[id^=coordenadaV]{
+    width:20px;
+    height:20px;
+    padding:0px;
+    margin:0px;
+    background-color:#ff006e;
+    border:solid;
+    border-color:black;
+    display:inline-block;
+}
+
+#opciones{
+    position:fixed;
+    top:1px;
+    left:1px;
+}

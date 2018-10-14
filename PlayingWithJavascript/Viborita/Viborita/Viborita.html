@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Viborita</title>
+    <link href="estilos.css" type="text/css" rel="stylesheet" />
+    <script>
+        function Escenario(x,y) {
+            this.x=x;
+            this.y=y;
+            this.casilleros = new Array(this.x*this.y);
+            this.div=null;
+        }
+
+        window.onload = function () {
+            oMotor = new Motor();
+            oMotor.nuevaPartida();
+            window.onkeydown = cambiarDireccion;
+        }
+
+        function ComandoEncender(vibora, ultimoComando) {
+            this.casilleroActual = null;
+            this.direccion = vibora.direccion;
+            this.comandoAnterior = ultimoComando;
+            
+            this.encenderProximo = function () {
+                this.casilleroActual = vibora.cabeza.casillerosContiguos[vibora.direccion];
+                var estado = true;
+                if (this.casilleroActual != null) {
+                   estado= this.casilleroActual.encender();
+                } else {
+                    alert('PERDIO!!!');
+                    return false;
+                }
+                vibora.cabeza = this.casilleroActual;
+                this.apagarCola(vibora.longitud, 0);
+                return estado;
+            }
+
+            this.apagarCola = function (longitud, contador) {
+                if (longitud != contador) {
+                    contador++;
+                    if (this.comandoAnterior != null) {
+                        this.comandoAnterior.apagarCola(longitud, contador);
+                    }
+                } else {
+                    this.casilleroActual.apagar();
+                }
+            }
+        }
+
+        function moverVibora() {
+            var comando = new ComandoEncender(oMotor.vibora, oMotor.ultimoComando);
+            var estado = comando.encenderProximo();
+            oMotor.ultimoComando = comando;
+            if (!estado) {
+                clearInterval(oMotor.intervalo);
+            }
+        }
+
+        function cambiarDireccion() {
+            oMotor.cambiarRumbo();
+        }
+
+        function Motor() {
+            this.escenario = new Escenario(20, 20);
+            this.vibora = null;
+            this.ultimoComando = null;
+            this.intervalo = null;
+
+            this.cambiarRumbo = function () {
+                /*left arrow	37
+                up arrow	38
+                right arrow	39
+                down arrow	40*/
+                switch (window.event.keyCode) {
+                    case 37:{
+                        this.vibora.direccion = 2;
+                        break;
+                    } 
+                    case 38:{
+                        this.vibora.direccion = 0;
+                        break;
+                    }
+                    case 39:{
+                        this.vibora.direccion = 3;
+                        break;
+                    }
+                    case 40: {
+                        this.vibora.direccion = 1;
+                        break;
+                    }
+                }
+
+            }
+
+            this.nuevaPartida=function(){
+                this.escenario.div = document.getElementById('escenario');
+                while(this.escenario.div.firstChild){
+                    this.escenario.div.removeChild(this.escenario.div.firstChild);
+                }
+
+                var noEsUltimaFila = true;
+                var noEsUltimaColumna=true;
+                var noESPrimerColumna=true;
+                var noEsPrimerFila = true;
+
+                //creo todos los casilleros
+                var divHorizontal;
+                for(i=0;i<this.escenario.casilleros.length;i++){
+                    var divCasillero = document.createElement('DIV');
+                    divCasillero.id='casillero'+i;
+                    if(i%this.escenario.x==0){
+                        divHorizontal=document.createElement('DIV');
+                        divHorizontal.id='horizontal'+i;
+                        this.escenario.div.appendChild(divHorizontal);
+                    }
+                    divHorizontal.appendChild(divCasillero);
+                    this.escenario.casilleros[i] = new Casillero(divCasillero);
+                }
+
+                //les digo a quien tienen al lado
+                for (i = 0; i < this.escenario.casilleros.length; i++) {
+                    noESPrimerColumna = (i % this.escenario.x) != 0;
+                    noEsUltimaColumna = (i % this.escenario.x) != this.escenario.x - 1;
+                    noEsPrimerFila = i > this.escenario.x;
+                    noEsUltimaFila = i < this.escenario.casilleros.length - this.escenario.x;
+
+                    //agregar arriba
+                    if (noEsPrimerFila) {
+                        this.escenario.casilleros[i].casillerosContiguos[0] = this.escenario.casilleros[i - this.escenario.x];
+                    }
+                    //agregar abajo
+                    if (noEsUltimaFila) {
+                        this.escenario.casilleros[i].casillerosContiguos[1] = this.escenario.casilleros[i + this.escenario.x];
+                    }
+                    //agregar izquierda
+                    if (noESPrimerColumna) {
+                        this.escenario.casilleros[i].casillerosContiguos[2] = this.escenario.casilleros[i - 1];
+                    }
+
+                    //agregar derecha
+                    if (noEsUltimaColumna) {
+                        this.escenario.casilleros[i].casillerosContiguos[3] = this.escenario.casilleros[i + 1];
+                    }
+                }
+
+
+                this.vibora=new Vibora(this.escenario.casilleros[1]);
+
+                //ponemos la viborita en el campo
+                var comando = new ComandoEncender(this.vibora, null);
+                this.ultimoComando = comando;
+                this.ultimoComando.encenderProximo();
+                this.intervalo = setInterval(moverVibora, 1000);
+            }
+        }
+
+              
+        function Casillero(div) {
+            this.div = div;
+            this.esPared = false;
+            this.casillerosContiguos = new Array(4);
+            this.intervaloEnCurso = null;          
+
+            this.encender = function () {
+                var hijo = document.createElement('DIV');
+                hijo.id = 'viborita';
+                if(!this.div.firstChild){
+                    this.div.appendChild(hijo);
+                } else {
+                    alert("PERDIO!!!!");
+                    return false;
+                }
+                return true;
+            }
+
+            this.apagar=function(){
+                if (this.div.firstChild) {
+                    this.div.removeChild(this.div.firstChild);
+                }
+            }
+
+        }
+
+        function Vibora(casillero) {
+            this.longitud = 5;
+            this.direccion = 1;
+            this.cabeza = casillero;
+        }
+
+    </script>
+
+
+
+</head>
+<body>
+    <div id="escenario"></div>
+</body>
+</html>

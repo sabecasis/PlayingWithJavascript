@@ -1,0 +1,9 @@
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\bin\Viborita.dll.config
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\bin\Viborita.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\bin\Viborita.pdb
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\bin\Viborita.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\obj\Debug\Viborita.Resources.resources
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\obj\Debug\Viborita.vbproj.GenerateResource.Cache
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\obj\Debug\Viborita.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\obj\Debug\Viborita.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Viborita\Viborita\obj\Debug\Viborita.pdb

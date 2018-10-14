@@ -1,0 +1,9 @@
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\bin\BatallaNaval.dll.config
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\bin\BatallaNaval.dll
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\bin\BatallaNaval.pdb
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\bin\BatallaNaval.xml
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\obj\Debug\BatallaNaval.Resources.resources
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\obj\Debug\BatallaNaval.vbproj.GenerateResource.Cache
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\obj\Debug\BatallaNaval.dll
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\obj\Debug\BatallaNaval.xml
+C:\Users\sasu\Documents\Visual Studio 2013\Projects\BatallaNaval\BatallaNaval\obj\Debug\BatallaNaval.pdb

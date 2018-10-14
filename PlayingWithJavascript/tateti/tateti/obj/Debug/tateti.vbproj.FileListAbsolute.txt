@@ -1,0 +1,9 @@
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\bin\tateti.dll.config
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\bin\tateti.dll
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\bin\tateti.pdb
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\bin\tateti.xml
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\obj\Debug\tateti.Resources.resources
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\obj\Debug\tateti.vbproj.GenerateResource.Cache
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\obj\Debug\tateti.dll
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\obj\Debug\tateti.xml
+c:\users\sasu\documents\visual studio 2013\Projects\tateti\tateti\obj\Debug\tateti.pdb

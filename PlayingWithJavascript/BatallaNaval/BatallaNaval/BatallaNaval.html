@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Batalla Naval</title>
+    <link href="estilos.css" type="text/css" rel="stylesheet" />
+    <script>
+
+        function Tablero(div, cantX, cantY) {
+            this.div = div;
+            this.x = cantX;
+            this.y = cantY;
+            this.cantidadDeCasilleros = this.x * this.y;
+            this.casilleros = new Array(this.cantidadDeCasilleros);
+
+          
+            var divHorizontal;
+
+            //Agregar coordenadas horizontales
+            //Falta agregar las verticales
+            divHorizontal = document.createElement('DIV');
+            divHorizontal.id = 'coordenadasHorizontal';
+            this.div.appendChild(divHorizontal);
+            for (i = 0; i < this.x; i++) {
+                var divCoordenada = document.createElement('DIV');
+                divCoordenada.id = "coordenadaH" + i;
+                var texto = document.createTextNode(i);
+                divCoordenada.appendChild(texto);
+                divHorizontal.appendChild(divCoordenada);
+            }
+            this.div.appendChild(divHorizontal);
+
+            //crear los casilleros y agregarlos al array
+            for (i = 0; i < this.cantidadDeCasilleros; i++) {
+                if ((i % this.x) == 0) {
+                    divHorizontal = document.createElement('DIV');
+                    divHorizontal.id = "horizontal" + i; //darle un nombre unico pero que siga un patrón
+                    this.div.appendChild(divHorizontal);
+                }
+                var divCasillero = document.createElement('DIV');
+                divCasillero.id = "vacio" + i; //lo mismo para cada casillero
+                divHorizontal.appendChild(divCasillero);
+                this.casilleros[i] = new Casillero(divCasillero, 4);
+            }
+
+            //Ahora a cada casillero, indicarle quienes son sus contiguos.
+            var noEsPrimeraColumna = false;
+            var noEsUltimaFila = false;
+            var noEsUltimaColumna = false;
+            for (i = 0; i < this.cantidadDeCasilleros; i++) {
+                noEsPrimeraColumna = (i % this.x) != 0;
+                noEsUltimaFila = i < (this.cantidadDeCasilleros - this.x);
+                noEsUltimaColumna = (i % this.x) != (this.x - 1);
+
+                //cargo las contiguas horizontales
+                if (noEsUltimaColumna) {
+                    this.casilleros[i].casillerosContiguos[0] = this.casilleros[i + 1];
+                }
+
+                //cargo las contiguas verticales
+                if (noEsUltimaFila) {
+                    this.casilleros[i].casillerosContiguos[1] = this.casilleros[i + this.x];
+                }
+
+                //cargo las diagonales derechas abajo.
+                if (noEsUltimaColumna && noEsUltimaFila) {
+                    this.casilleros[i].casillerosContiguos[2] = this.casilleros[i + this.x + 1];
+                }
+
+                //cargo las diagonales izquierdas abajo
+                if (noEsPrimeraColumna && noEsUltimaFila) {
+                    this.casilleros[i].casillerosContiguos[3] = this.casilleros[i + this.x - 1];
+                }
+
+            }
+
+        }
+
+        function Barco(tipo) {
+            this.tipoDeBarco = tipo;
+            this.casilleros = new Array(this.tipoDeBarco.cantidadDeCasilleros);
+            this.hundido = false;
+            this.tocados = 0;
+        }
+
+        function Casillero(div, cant) {
+            this.div = div;
+            this.cantidadDeCasillerosContiguos = cant;
+            this.casillerosContiguos = new Array(this.cantidadDeCasillerosContiguos);
+            this.marcado = false;
+
+            this.borrarBarco = function (barco, profundidad) {
+                if (barco.casilleros[profundidad] != null) {
+                    barco.casilleros[profundidad].div.removeChild(barco.casilleros[profundidad].div.childNodes[0]);
+                }
+            }
+
+            this.marcarBarco = function (direccion, barco, profundidad) {
+                this.borrarBarco(barco, profundidad);
+                var marcado = document.createElement('DIV');
+                marcado.id = 'barco' + this.div.id;
+                this.div.appendChild(marcado);
+                barco.casilleros[profundidad] = this;
+                profundidad++;
+                if (profundidad == barco.tipoDeBarco.cantidadDeCasilleros) {
+                    return;
+                }
+                this.casillerosContiguos[direccion].marcarBarco(direccion, barco, profundidad);
+            }
+        }
+
+        function Motor() {
+            this.jugador1 = new Jugador("Jugador1");
+            this.jugador2 = new Jugador("Jugador2");
+            this.jugadorActual = this.jugador1;
+            this.esGanador = false;
+
+            this.habilitarAcomodarBarcos = function () {
+                for (i = 0; i < this.jugadorActual.tablero1.cantidadDeCasilleros; i++) {
+                    this.jugadorActual.tablero1.casilleros[i].div.onclick = ingresarBarco;
+                }
+            }
+
+            this.deshabilitarAcomodarBarcos = function () {
+                for (i = 0; i < this.jugadorActual.tablero1.cantidadDeCasilleros; i++) {
+                    this.jugadorActual.tablero1.casilleros[i].div.onclick = null;
+                }
+                this.jugadorActual.div.removeChild(this.jugadorActual.tablero1.div);
+            }
+
+            this.deshabilitarJuego = function () {
+                for (i = 0; i < this.jugadorActual.tablero2.cantidadDeCasilleros; i++) {
+                    this.jugadorActual.tablero2.casilleros[i].div.onclick = null;
+                }
+            }
+
+            this.habilitarJuego = function () {
+                this.deshabilitarJuego()
+                this.cambiarJugador();
+                for (i = 0; i < this.jugadorActual.tablero2.cantidadDeCasilleros; i++) {
+                    this.jugadorActual.tablero2.casilleros[i].div.onclick = jugar;
+                }
+            }
+
+            this.inicializar = function (nombre1, nombre2, x, y) {
+                this.jugador1.nombre = nombre1;
+                this.jugador2.nombre = nombre2;
+                this.jugador1.div = document.getElementById('jugador1');
+                this.jugador2.div = document.getElementById('jugador2');
+                this.jugador1.tablero1 = new Tablero(document.getElementById('tableroJ11'), x, y);
+                this.jugador1.tablero2 = new Tablero(document.getElementById('tableroJ12'), x, y);
+                this.jugador2.tablero1 = new Tablero(document.getElementById('tableroJ21'), x, y);
+                this.jugador2.tablero2 = new Tablero(document.getElementById('tableroJ22'), x, y);
+                this.habilitarAcomodarBarcos();
+                this.jugador1.crearBarcos();
+                this.jugador2.crearBarcos();
+
+            }
+
+
+            this.jugar = function (id) {
+                var posicion = id.substring(id.indexOf('vacio') + 'vacio'.length);
+                if (this.jugadorActual.tablero2.casilleros[posicion].marcado == false) {
+                    var tocado = false;
+                    var barcosDeContrincante = null;
+                    if (this.jugadorActual == this.jugador1) {
+                        barcosDeContrincante = this.jugador2.listaDeBarcos;
+                    } else {
+                        barcosDeContrincante = this.jugador1.listaDeBarcos;
+                    }
+                    for (i = 0; i < barcosDeContrincante.length; i++) {
+                        var barco = barcosDeContrincante[i];
+                        for (j = 0; j < barco.casilleros.length; j++) {
+                            if (barco.casilleros[j].div.id == id) {
+                                barco.tocados++;
+                                tocado = true;
+                                var tocado = document.createElement('DIV');
+                                tocado.id = "tocado" + i;
+                                this.jugadorActual.tablero2.casilleros[posicion].div.appendChild(tocado);
+                                this.jugadorActual.tablero2.casilleros[posicion].marcado = true;
+                                if (barco.tocados == barco.casilleros.length) {
+                                    barco.hundido = true;
+                                    var esGanador = true;
+                                    for (h = 0; h < barcosDeContrincante.length; h++) {
+                                        esGanador = esGanador && barcosDeContrincante[h].hundido;
+                                    }
+                                    if (esGanador) {
+                                        this.jugadorActual.esGanador = esGanador;
+                                        alert(this.jugadorActual.nombre + ' Gano!!!');
+                                    } else {
+                                        alert('Hundido!!!');
+                                    }
+                                } else {
+                                    alert('Tocado!!');
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if (tocado == false) {
+                        var agua = document.createElement('DIV');
+                        agua.id = "agua" + i;
+                        this.jugadorActual.tablero2.casilleros[posicion].div.appendChild(agua);
+                        this.jugadorActual.tablero2.casilleros[posicion].marcado = true;
+                        alert('Agua!');
+                    }
+                    if (this.jugadorActual.esGanador == true) {
+                        this.deshabilitarJuego();
+                    } else {
+                        this.habilitarJuego();
+                    }
+                   
+                }
+            }
+
+            this.cambiarJugador = function () {
+                if (this.jugadorActual == this.jugador1) {
+                    this.jugadorActual = this.jugador2;
+                } else {
+                    this.jugadorActual = this.jugador1;
+                }
+            }
+        }
+
+        function jugar() {
+            oMotor.jugar(this.id);
+        }
+
+        window.onload = function () {
+            oMotor = new Motor();
+            var nombre1 = prompt("Ingrese el nombre del jugador 1", "Jugador 1");
+            var nombre2 = prompt("Ingrese el nombre del jugador 2", "Jugador 2");
+            oMotor.inicializar(nombre1, nombre2, 10, 10);
+            var texto = document.createTextNode('Tablero de ' + nombre1);
+            document.getElementById('spJugador1').appendChild(texto);
+            texto = document.createTextNode('Tablero de ' + nombre2);
+            document.getElementById('spJugador2').appendChild(texto);
+
+            alert(oMotor.jugadorActual.nombre + ' haga click en el tablero izquierdo para seleccionar la ubicación de los barcos, luego seleccione la dirección de rotación de las opciones ofrecidas en el menú de la esquina superior izquierda. Haga click en el botón OK al terminar de colocar el barco para ingresar el próximo.');
+
+        }
+
+
+        function Jugador(nombre, div) {
+            this.nombre = nombre;
+            this.cantidadDePartidosGanados = 0;
+            this.cantidadDeBarcosHundidos = 0;
+            this.tablero1 = null;
+            this.tablero2 = null;
+            this.barcoActual = 0;
+            this.listaDeBarcos = new Array(4);
+            this.div = div;
+
+            this.cambiarBarco = function () {
+                this.barcoActual++;
+            }
+
+            this.crearBarcos = function () {
+                //creo los barcos que voy a meter
+                var tipoDeBarco = new TipoDeBarco('Porta aviones', 5);
+                var barco = new Barco(tipoDeBarco);
+                this.listaDeBarcos[0] = barco;
+                tipoDeBarco = new TipoDeBarco('Buque', 3);
+                barco = new Barco(tipoDeBarco);
+                this.listaDeBarcos[1] = barco;
+                barco = new Barco(tipoDeBarco);
+                this.listaDeBarcos[2] = barco;
+                tipoDeBarco = new TipoDeBarco('Lancha', 1);
+                barco = new Barco(tipoDeBarco);
+                this.listaDeBarcos[3] = barco;
+            }
+
+            this.ingresarBarco = function (id) {
+                var posicion = id.substring(id.indexOf('vacio') + 'vacio'.length);
+                var direccion = document.getElementById('direccion').value;
+                this.tablero1.casilleros[posicion].marcarBarco(direccion, this.listaDeBarcos[this.barcoActual], 0);
+            }
+        }
+
+        function ingresarBarco() {
+            oMotor.jugadorActual.ingresarBarco(this.id);
+        }
+
+        function cambiarBarco() {
+            if (oMotor.jugadorActual.barcoActual == oMotor.jugadorActual.listaDeBarcos.length - 1) {
+                oMotor.deshabilitarAcomodarBarcos();
+                oMotor.cambiarJugador();
+                if (oMotor.jugadorActual.barcoActual != oMotor.jugadorActual.listaDeBarcos.length - 1) {
+                    oMotor.habilitarAcomodarBarcos();
+                    alert(oMotor.jugadorActual.nombre + ' es su turno de posicionar los barcos en su tablero');
+                    alert(oMotor.jugadorActual.nombre + ' haga click en el tablero izquierdo para seleccionar la ubicación de los barcos, luego seleccione la dirección de rotación de las opciones ofrecidas en el menú de la esquina superior izquierda. Haga click en el botón OK al terminar de colocar el barco para ingresar el próximo.');
+                } else {
+                    alert('A jugar!');
+                    oMotor.habilitarJuego();
+                }
+            } else {
+                oMotor.jugadorActual.cambiarBarco();
+            }
+
+        }
+
+        function TipoDeBarco(tipo, cantidad) {
+            this.tipo = tipo;
+            this.cantidadDeCasilleros = cantidad;
+        }
+
+    </script>
+</head>
+<body>
+    <div id="opciones">
+        <select id="direccion">
+            <option value="0">Horizontal</option>
+            <option value="1">Vertical</option>
+            <option value="2">Diagonal derecha</option>
+            <option value="3">Diagonal Izquierda</option>
+        </select>
+        <input type="button" value="OK" id="ok1" onclick="cambiarBarco();" />
+    </div>
+    <div id="contenedor1">
+        <span id="spJugador1"></span>
+        <div id="jugador1">
+            <div id="tableroJ11">
+
+            </div>
+            <div id="tableroJ12"></div>
+        </div>
+    </div>
+    <div id="contenedor2">
+        <span id="spJugador2"></span>
+        <div id="jugador2">
+            <div id="tableroJ21"></div>
+            <div id="tableroJ22"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\bin\Simon.dll.config
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\bin\Simon.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\bin\Simon.pdb
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\bin\Simon.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\obj\Debug\Simon.Resources.resources
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\obj\Debug\Simon.vbproj.GenerateResource.Cache
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\obj\Debug\Simon.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\obj\Debug\Simon.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Simon\Simon\obj\Debug\Simon.pdb

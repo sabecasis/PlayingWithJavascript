@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>TATETI</title>
+    <link href="estilosDeJuego.css" rel="stylesheet" type="text/css" />
+    <script>
+
+        function Tablero(xEntrada, yEntrada, div, cantidadGanar){
+            this.x=xEntrada;
+            this.y = yEntrada;
+            this.width = xEntrada * 50;
+            this.height = yEntrada * 50;
+            this.cantidadDeCasilleros=xEntrada*yEntrada;
+            this.casilleros= new Array(this.cantidadDeCasilleros);
+            this.divTablero = div;
+            this.cantidadParaGanar = cantidadGanar;
+
+            this.agregarFicha = function (id, ficha) {
+                if (this.casilleros[id].figura.childElementCount == 0) {
+                    var imagen = document.createElement('IMG');
+                    imagen.setAttribute('src', "./" + ficha + '.jpg');
+                    imagen.name = ficha;
+                    ganador=false;
+                    this.casilleros[id].figura.appendChild(imagen);
+                    for (i = 0; i < this.cantidadDeCasilleros; i++) {
+                        for (j = 0; j < this.casilleros[i].cantCasillerosContiguos; j++) {
+                            ganador = ganador || this.casilleros[i].preguntar(this.cantidadParaGanar, 1, j);
+                        }
+                        if (ganador) {
+                            break;
+                        }
+                    }
+                    return ganador;
+                }
+            }
+
+            this.crearTablero = function () {
+                var divHorizontal;
+                for (i = 0; i < this.cantidadDeCasilleros ; i++) {
+                    var nuevoDiv = document.createElement('DIV');
+                    nuevoDiv.id = i;
+                    nuevoDiv.setAttribute("name", "vacio");
+                    if ((i % this.x) == 0) {
+                        divHorizontal = document.createElement('DIV');
+                        this.divTablero.appendChild(divHorizontal);
+                        divHorizontal.id = "horizontal" + i;
+                    }
+                    divHorizontal.appendChild(nuevoDiv);
+                    nuevoDiv.onclick = clickEnCelda;
+                    var nuevoCasillero = new Casillero(nuevoDiv, 4);
+                    this.casilleros[i] = nuevoCasillero;
+                }
+            }
+
+            this.crearRelacionesDeFichas = function () {
+                var noUltimaColumna = false;
+                var noUltimaFila = false;
+                var noPrimeraColumna = false;
+                for (i = 0; i < this.cantidadDeCasilleros; i++) {
+                    noUltimaColumna = (i % this.x) != (this.x-1);
+                    noUltimaFila = i < (this.cantidadDeCasilleros - 1);
+                    noPrimeraColumna = (i % this.x) != 0;
+                    if (noUltimaColumna) {
+                        this.casilleros[i].casillerosContiguos[0] = this.casilleros[i + 1]; //horizontal
+                    }
+                    if (noUltimaFila) { 
+                        this.casilleros[i].casillerosContiguos[1] = this.casilleros[i + this.x];//vertical
+                    }
+                    if (noUltimaFila && noUltimaColumna) {
+                        this.casilleros[i].casillerosContiguos[2] = this.casilleros[i + this.x + 1];//diagonal derecha
+                    }
+
+                    if (noPrimeraColumna && noUltimaFila) {
+                        this.casilleros[i].casillerosContiguos[3] = this.casilleros[i + this.x - 1];//diagonal izquierda
+                    }
+
+                }
+            }
+
+            this.inicializar = function () {
+                this.crearTablero();
+                this.crearRelacionesDeFichas();
+            }
+        }
+
+        function Casillero(div, cant) {
+            this.cantCasillerosContiguos = cant;
+            this.casillerosContiguos = new Array(this.cantCasillerosContiguos);
+            this.identificador = div.id;
+            this.figura = div;
+         
+            this.preguntar = function (profundidad, cuenta, posicion) {
+                if (cuenta == profundidad) {
+                    return true;
+                } else if (
+                    this.casillerosContiguos[posicion] != null
+                    && this.casillerosContiguos[posicion].figura.childElementCount != 0
+                    && this.figura.childElementCount != 0
+                    && this.figura.childNodes[0].name == this.casillerosContiguos[posicion].figura.childNodes[0].name) {
+                    cuenta += 1;
+                    return this.casillerosContiguos[posicion].preguntar(profundidad, cuenta, posicion);
+                } else if (this.casillerosContiguos[posicion] != null) {
+                    cuenta = 1;
+                    return this.casillerosContiguos[posicion].preguntar(profundidad, cuenta, posicion);
+                }
+                else {
+                    return false;
+                }
+
+            }
+
+            
+        }
+
+        function Jugador(jNombre, fuchaSeleccionada){
+            this.nombre=jNombre;
+            this.partidosGanados = 0;
+            this.ficha = fuchaSeleccionada;
+        }
+
+        function motor(nombre1, nombre2) {
+            this.jugador1=new Jugador(nombre1, "cruz");
+            this.jugador2 = new Jugador(nombre2, "circulo");
+            this.jugadorActual =this.jugador1;
+            this.oTablero = null;
+            this.inicializar = function (x, y, div, cantidadGanar) {
+                this.oTablero = new Tablero(x, y, div, cantidadGanar);
+                this.oTablero.inicializar();
+            }
+
+            this.ganar=function(){
+                alert('JUGADOR: ' + this.jugadorActual.nombre + " GANO!!!");
+                this.jugadorActual.partidosGanados+=1;
+            }
+
+            this.jugar = function (id) {
+                if (this.oTablero.agregarFicha(id, this.jugadorActual.ficha)) {
+                    this.ganar();
+                }
+                if (this.jugadorActual==this.jugador1) {
+                    this.jugadorActual = this.jugador2;
+                } else {
+                    this.jugadorActual = this.jugador1;
+                }
+            }
+
+
+        }
+
+
+        function clickEnCelda() {
+            oMotor.jugar(this.id)
+        }
+
+        window.onload = function () {
+            var nombre1 = "";
+            while (nombre1 == "") {
+                nombre1 = prompt("Ingrese el nombre del jugador 1", "");
+            }
+            var nombre2 = "";
+            while (nombre2 == "") {
+                nombre2 = prompt("Ingrese el nombre del jugador 2", "");
+            }
+            var divTablero = document.getElementById('tableroDeJuego');
+            //no lleva var adelante, para que la variable sea global y se pueda reutilizar
+            oMotor = new motor(nombre1, nombre2);
+            oMotor.inicializar(3, 3, divTablero, 3); //Si quiero gomoku, cambio los parametros, 19, 19, divTablero, 5 :D
+        }
+    </script>
+</head>
+<body>
+    <div id="tableroDeJuego">
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\bin\Ahorcado.dll.config
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\bin\Ahorcado.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\bin\Ahorcado.pdb
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\bin\Ahorcado.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\obj\Debug\Ahorcado.Resources.resources
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\obj\Debug\Ahorcado.vbproj.GenerateResource.Cache
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\obj\Debug\Ahorcado.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\obj\Debug\Ahorcado.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Ahorcado\Ahorcado\obj\Debug\Ahorcado.pdb

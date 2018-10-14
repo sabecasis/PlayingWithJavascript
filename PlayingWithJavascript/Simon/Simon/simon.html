@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Simon</title>
+    <link href="estilos.css" type="text/css" rel="stylesheet" />
+    <script>
+
+        function Jugador() {
+            this.cantidadDeComandos = 0;
+        }
+
+        function Motor() {
+            this.primerComando = null;
+            this.ultimoComando = null;
+            this.tablero = new Tablero();
+            this.cantidadDeComandos = 0;
+            this.jugador = new Jugador();
+            this.tiempoActual = 4500;
+
+            this.cambiarTiempo=function(){
+                if(this.cantidadDeComandos % 2==0 && this.tiempoActual>600){
+                    this.tiempoActual=this.tiempoActual-600;
+                }
+            }
+
+            this.deshabilitarJuego = function () {
+                for (i = 0; i < this.tablero.casilleros.length; i++) {
+                    this.tablero.casilleros[i].div.onclick = null;
+                }
+            }
+
+            this.nuevaPartida=function(){
+                this.deshabilitarJuego();
+                this.primerComando = null;
+                this.ultimoComando = null;
+                this.cantidadDeComandos = 0;
+            }
+
+            this.perder=function(){
+                var sonido = new Audio("chord.wav");
+                sonido.play();
+                alert('PERDIO!!!');
+                this.nuevaPartida();
+            }
+
+            this.agregarComandoDeUsuario=function(color){
+                var comando = new ComandoCambiar(color, this.tablero);
+                comando.ejecutar(600);
+                var esCorrecto = false;
+                esCorrecto=this.primerComando.verificarJugada(this.jugador.cantidadDeComandos, 0, color);
+                if (esCorrecto) {
+                    this.jugador.cantidadDeComandos++;
+                    if (this.jugador.cantidadDeComandos == this.cantidadDeComandos) {
+                        this.jugador.cantidadDeComandos = 0;
+                        document.getElementById('puntaje').childNodes[0].nodeValue=this.cantidadDeComandos;
+                        this.deshabilitarJuego();
+                        setTimeout(ejecutarSimon, 4500);
+
+                    }
+                } else {
+                    this.perder();
+                }
+                
+            }
+            
+            this.habilitarJuego = function () {
+                for (i = 0; i < this.tablero.casilleros.length; i++) {
+                    this.tablero.casilleros[i].div.onclick = jugar;
+                }
+            }
+
+            this.jugar = function () {
+                var color = Math.floor(Math.random() * 4);
+                var nuevoComando = new ComandoCambiar(this.tablero.casilleros[color].color, this.tablero);
+                if (this.ultimoComando != null) {
+                    this.ultimoComando.siguienteComando = nuevoComando;
+                }
+                this.ultimoComando = nuevoComando;
+                if (this.primerComando == null) {
+                    this.primerComando = this.ultimoComando;
+                }
+                this.cantidadDeComandos++;
+                this.primerComando.ejecutar(this.tiempoActual);
+                this.cambiarTiempo();
+                this.habilitarJuego();
+            }
+        }
+
+        function Tablero() {
+            this.casilleros = new Array(4);
+            this.casilleros[0] = new Casillero(document.getElementById('azul'));
+            this.casilleros[1] = new Casillero(document.getElementById('verde'));
+            this.casilleros[2] = new Casillero(document.getElementById('amarillo'));
+            this.casilleros[3] = new Casillero(document.getElementById('rojo'));
+
+        }
+
+        function ejecutarSimon() {
+            oMotor.jugar();
+        }
+
+        function Casillero(div) {
+            this.div = div;
+            this.color = div.id;
+            this.sonido = new Audio(this.color+".wav");
+        }
+
+        function ComandoCambiar(color, tablero) {
+            this.encendido = document.createElement('DIV');
+            this.encendido.id = 'encendido' + color;
+            this.color = color;
+            this.siguienteComando = null;
+            this.tablero = tablero;
+
+            this.verificarJugada = function (profundidad, contador, color) {
+                if (contador< profundidad) {
+                    contador++;
+                    return this.siguienteComando.verificarJugada(profundidad, contador, color);
+                } else {
+                    if (this.color == color) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+
+            this.ejecutar = function (tiempo) {
+                this.encender(tiempo);
+                setTimeout(this.apagar, tiempo, { tablero: this.tablero, color: this.color, hijo: this.encendido, siguiente: this.siguienteComando, temp:tiempo });
+               
+            }
+
+            this.encender = function (tiempo) {
+                for (i = 0; i < this.tablero.casilleros.length; i++) {
+                    if (this.tablero.casilleros[i].color == this.color) {
+                        this.tablero.casilleros[i].div.appendChild(this.encendido);
+                        /*this.tablero.casilleros[i].sonido.playbackRate = Math.floor((3000/tiempo));*/
+                        this.tablero.casilleros[i].sonido.play();
+
+                    }
+                }
+            }
+
+            this.apagar = function (params) {
+                for (i = 0; i < params.tablero.casilleros.length; i++) {
+                    if (params.tablero.casilleros[i].color == params.color) {
+                        params.tablero.casilleros[i].div.removeChild(params.hijo);
+                    }
+                }
+                
+                if (params.siguiente != null) {
+                    params.siguiente.ejecutar(params.temp);
+                }
+            }
+        }
+
+        function jugar() {
+            oMotor.agregarComandoDeUsuario(this.id);
+        }
+
+      
+
+        function nuevo() {
+            oMotor.nuevaPartida();
+            oMotor.jugar();
+        }
+
+      
+        window.onload = function () {
+            oMotor = new Motor();
+            oMotor.jugar();
+        }
+
+    </script>
+</head>
+<body>
+    <div id="juego">
+        Puntaje: <span id="puntaje">0</span>
+        <div id="fila1">
+            <div id="azul"></div>
+            <div id="verde"></div>
+        </div>
+        <div id="fila2">
+            <div id="amarillo"></div>
+            <div id="rojo"></div>
+        </div>
+        <input type="button" value="Nueva partida" onclick="nuevo();"/>
+    </div>
+</body>
+</html>

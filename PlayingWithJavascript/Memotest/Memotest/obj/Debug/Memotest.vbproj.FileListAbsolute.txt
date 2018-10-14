@@ -1,0 +1,9 @@
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\bin\Memotest.dll.config
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\bin\Memotest.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\bin\Memotest.pdb
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\bin\Memotest.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\obj\Debug\Memotest.Resources.resources
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\obj\Debug\Memotest.vbproj.GenerateResource.Cache
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\obj\Debug\Memotest.dll
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\obj\Debug\Memotest.xml
+c:\users\sasu\documents\visual studio 2013\Projects\Memotest\Memotest\obj\Debug\Memotest.pdb

@@ -1,0 +1,19 @@
+﻿body {
+}
+
+img[id^=imagen]{
+    width:100px;
+    height:100px;
+}
+
+div[id^=casillero]{
+    width:100px;
+    height:100px;
+    display:inline-block;
+    margin-left:2px;
+    margin-right:2px;
+    border:solid;
+    border-width:2px;
+    border-color:#b6ff00;
+    background-color:#ffd800;
+}
